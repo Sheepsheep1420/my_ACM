@@ -1,4 +1,5 @@
-//二分最小值
+## 二分最小值
+```cpp
 #include<bits/stdc++.h>
 using namespace std;
 #define ll long long
@@ -39,3 +40,4 @@ int main(){
     while( tt-- ) solve() ;
     return 0 ;
 }
+```
