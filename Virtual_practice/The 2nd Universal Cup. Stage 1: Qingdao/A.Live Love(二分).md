@@ -1,4 +1,6 @@
-二分最小值
+题意：
+思路：
+代码：
 ```cpp
 #include<bits/stdc++.h>
 using namespace std;
