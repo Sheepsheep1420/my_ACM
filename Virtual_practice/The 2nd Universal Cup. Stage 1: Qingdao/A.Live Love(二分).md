@@ -1,4 +1,4 @@
-## 二分最小值
+二分最小值
 ```cpp
 #include<bits/stdc++.h>
 using namespace std;
