@@ -19,5 +19,8 @@
 
 ### 思路：
 
+![image](https://github.com/Sheepsheep1420/my_ACM/assets/97673966/2f2ba341-26e4-4680-a0a3-f89bb00be2dc)
+
+
 ### 代码：
 
