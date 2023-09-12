@@ -1,0 +1,102 @@
+P3834 【模板】可持久化线段树 2
+
+在query那里卡了好久
+
+```cpp
+
+#include<bits/stdc++.h>
+using namespace std;
+#define ll long long
+#define double long double
+const ll N = 2e5+9 ;
+const ll INF = 1e18 ;
+// 前 i 个数字在 [x, y] 范围内的个数
+struct node{
+    int l , r , lson , rson , val ;
+}t[ N<<5 ];
+int n , m , a[ N ] , b[ N ] , T[ N ] , idx ;
+void Update( int x ){ //向上更新
+    t[x].val = t[ t[x].lson ].val +  t[ t[x].rson ].val ;
+}
+int Build( int l , int r ){
+   int y = ++idx ;
+   t[ y ].l = l ; t[ y ].r = r ;
+
+   if( l == r ) return y ;
+
+   int mid = l+r >> 1 ;
+   t[ y ].lson = Build( l , mid ) ;
+   t[ y ].rson = Build( mid+1 , r ) ;
+   return y ;
+}
+int Insert( int p , int l , int r , int x ){
+    //在版本p的基础上对x位置+1建立新版本
+    //当前的y点是新建的
+    //返回新点的编号
+    int y = ++idx ; t[ y ] = t[ p ] ;
+    if( l == x && x == r ){
+        t[y].val ++ ;
+        return y ;
+    }
+    int mid = l+r >> 1 ;
+
+    if( x <= mid ) t[ y ].lson = Insert( t[p].lson , l , mid , x ) ;
+    else t[ y ].rson = Insert( t[p].rson , mid+1 , r , x ) ;
+
+    Update( y ) ;
+
+    return y ;
+}
+int Query( int p1 , int p2 , int L , int R , int x ){//在版本[p1,p2]版本内【l,r】的数有几个
+    //[L,R]当前区间
+    if( L == R ){
+        return L ;
+    }
+
+    int res = t[t[p2].lson].val-t[t[p1].lson].val ;
+    int mid = L+R >> 1 ;
+
+    if( x <= res ) return Query( t[p1].lson , t[p2].lson , L , mid , x ) ;
+    else return Query( t[p1].rson , t[p2].rson , mid+1 , R , x-res ) ;
+
+}
+bool cmp( int x , int y ){
+    return a[x] < a[y] ;
+}
+void output(){
+    cout << " tot=" << idx << "\n" ;
+    for( int i = 1 ; i <= idx ; i ++ ){
+        cout << " i=" << i << " l=" << t[i].l << " r=" << t[i].r << " lson=" << t[i].lson << " rson=" << t[i].rson << " val=" << t[i].val << "\n" ;
+    }
+}
+int main(){
+    ios::sync_with_stdio(0); cin.tie(0);cout.tie(0);
+
+    cin >> n >> m ;
+    for( int i = 1 ; i <= n ; i ++ ){
+        cin >> a[ i ] ; b[ i ] = i ;
+    }
+
+    sort( b+1 , b+1+n , cmp ) ;
+
+    for( int i = 1 , x ; i <= n ; i ++ ){
+        x = a[ b[i] ] ; a[ b[i] ] = i ; b[ i ] = x ;
+    }
+
+    T[0] = Build(1,n) ;
+
+    for( int i = 1 ; i <= n ; i ++ ){
+        T[i] = Insert( T[i-1] , 1 , n , a[i] ) ;
+    }
+
+    while( m-- ){
+        int p1 , p2 , x ; cin >> p1 >> p2 >> x ;
+        int ans = Query( T[p1-1] , T[p2] , 1 , n , x ) ;
+        cout << b[ans] << "\n" ;
+    }
+
+    return 0 ;
+}
+
+
+```
