@@ -1,0 +1,92 @@
+需要注意的点：向上跳的代价是需要预处理的
+
+```cpp
+#include<bits/stdc++.h>
+#define ll long long
+using namespace std;
+const ll N = 1e5+10 ;
+const ll mod = 998244353;
+int n , m , q , a[ N ] ;
+struct node
+{
+    int x , y , val ;
+    friend bool operator < (node a,node b)
+    {
+        return a.val < b.val ;
+    }
+};
+vector<node>e;
+ll w[N<<1] , sum[N<<1] , idx ; // w[]:重构树结点权  sum[]:子树贡献和
+int f[N<<1][20] ; // 倍增数组，举到18
+ll cost[N<<1][20] ; // 向上跳的实际代价
+int fa[N<<1] ; // 并查集
+int Find( int x )
+{
+    return fa[x] == x ? x : fa[x] = Find( fa[x] ) ;
+}
+
+void Kruskal() //重构
+{
+    for( int i = 1 ; i <= 2*n-1 ; i ++ )
+    {
+        fa[i] = i ;
+        if( i <= n ) sum[i] = a[i] ;
+        else sum[i] = 0 ;
+    }
+
+    idx = n ;
+    for( auto u : e )
+    {
+        int Fx = Find(u.x) , Fy = Find(u.y) ;
+        if( Fx == Fy ) continue ;
+        ++idx ;
+
+        w[idx] = u.val ;
+        sum[idx] = sum[Fx] + sum[Fy] ;
+        f[Fx][0] = idx ; f[Fy][0] = idx ;
+        cost[Fx][0] = w[idx]-sum[Fx] ; cost[Fy][0] = w[idx]-sum[Fy] ;
+
+        fa[Fx] = idx ;
+        fa[Fy] = idx ;
+    }
+
+    for( int j = 1 ; j <= 18 ; j ++ )
+        for( int i = 1 ; i <= 2*n-1 ; i ++ )
+        {
+            f[i][j] = f[ f[i][j-1] ][j-1] ;
+            cost[i][j] = max( cost[i][j-1] , cost[ f[i][j-1] ][j-1] ) ;
+        }
+}
+int main()
+{
+	ios::sync_with_stdio(false);cin.tie(0);cout.tie(0);
+
+	cin >> n >> m >> q ; e.resize(m);
+    for( int i = 1 ; i <= n ; i ++ ) cin >> a[ i ] ;
+	for( int i = 0 ; i < m ; i ++ )
+    {
+        cin >> e[i].x >> e[i].y >> e[i].val ;
+    }
+
+    sort( e.begin() , e.end() ) ;
+
+    Kruskal() ;
+
+    while( q-- )
+    {
+        ll x , val ; cin >> x >> val ;
+
+        for( int i = 18 ; i >= 0 ; i -- )
+        {
+            if( f[x][i] == 0 ) continue ;
+            if( cost[x][i] <= val ) x = f[x][i] ;
+        }
+
+        cout << sum[ x ] + val << "\n" ;
+    }
+
+	return 0;
+}
+
+
+```
